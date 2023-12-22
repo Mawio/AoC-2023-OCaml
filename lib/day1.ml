@@ -49,4 +49,4 @@ let calibrate file =
     with _ -> sum
   in aux 0;;
 
-let () = print_int (calibrate "/home/mawio/input");;
+let run = Common.print_int_endline (calibrate "input/day1");;

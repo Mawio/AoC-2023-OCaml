@@ -1,2 +1,13 @@
 (library
- (name aoc))
+ (name day1)
+ (modules day1)
+ (libraries str common))
+
+(library
+ (name day2)
+ (modules day2)
+ (libraries str common))
+
+(library
+ (name common)
+ (modules common))
