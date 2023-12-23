@@ -20,8 +20,7 @@ let calculate_sum games n_red n_green n_blue =
   | h :: t -> if is_draw_possible h then is_set_possible t else false
   in
 
-  let get_game_value game = 
-    let n, sets = game in
+  let get_game_value {number = n; sets} = 
     let rec aux = function
     | [] -> n
     | h :: t -> if is_set_possible h then aux t else 0 
@@ -74,7 +73,7 @@ let parse_file file =
 
   let parse_line line = 
     match (String.split_on_char ':' line) with
-    | [game_identifier; sets] -> (extract_game_number game_identifier, extract_sets sets)
+    | [game_identifier; sets] -> {number = extract_game_number game_identifier; sets = extract_sets sets}
     | _ -> raise (Invalid_argument "Found invalid game id")
   in
 
@@ -86,8 +85,45 @@ let parse_file file =
 in parse_games []
 ;;
 
-let run = 
+let part1 = 
   let parsed_file = parse_file "input/day2" in
   let sum = calculate_sum parsed_file 12 13 14 in
   Common.print_int_endline sum
+;;
+
+let calculate_total_power games = 
+
+  let max_to_power (red, green, blue) = red * green * blue in
+
+  let check_draw (red, green, blue) = function
+  | Red x when x > red -> (x, green, blue)
+  | Green x when x > green -> (red, x, blue)
+  | Blue x when x > blue -> (red, green, x)
+  | _ -> (red, green, blue)
+  in
+
+  let rec check_set max = function
+  | [] -> max
+  | h :: t -> check_set (check_draw max h) t
+  in
+
+  let check_game {number = _; sets} = 
+    let rec aux max = function
+    | [] -> max_to_power max
+    | h :: t -> aux (check_set max h) t
+  in aux (0,0,0) sets
+  in
+
+  let rec aux acc = function
+  | [] -> acc
+  | h :: t -> aux (acc + check_game h) t
+
+in aux 0 games
+;;
+
+
+let part2 =
+  let parsed_file = parse_file "input/day2" in
+  let total_power = calculate_total_power parsed_file in
+  Common.print_int_endline total_power
 ;;

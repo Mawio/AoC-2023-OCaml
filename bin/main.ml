@@ -1,1 +1,1 @@
-let () = Day2.run;;
+let () = Day2.part2;;
